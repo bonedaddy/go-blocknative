@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/url"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -28,9 +29,11 @@ type ConnectResponse struct {
 
 // Client wraps gorilla websocket connections
 type Client struct {
-	conn   *websocket.Conn
-	ctx    context.Context
-	cancel context.CancelFunc
+	mx      sync.RWMutex
+	conn    *websocket.Conn
+	ctx     context.Context
+	cancel  context.CancelFunc
+	initMsg BaseMessage // used to resend the initialization msg if connection drops
 }
 
 // New returns a new blocknative websocket client
@@ -65,13 +68,44 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 // Initialize is used to handle blocknative websockets api initialization
 // note we set CategoryCode and EventCode ourselves
 func (c *Client) Initialize(msg BaseMessage) error {
+	c.mx.Lock()
+	defer c.mx.Unlock()
 	msg.CategoryCode = "initialize"
 	msg.EventCode = "checkDappId"
-	return c.conn.WriteJSON(&msg)
+	c.initMsg = msg
+	if err := c.conn.WriteJSON(&msg); err != nil {
+		return err
+	}
+	var out interface{}
+	_ = c.conn.ReadJSON(&out)
+	return nil
+}
+
+// ReadJSON is a wrapper around Conn:ReadJSON
+func (c *Client) ReadJSON(out interface{}) error {
+	c.mx.RLock()
+	defer c.mx.RUnlock()
+	return c.conn.ReadJSON(out)
+}
+
+// WriteJSON is a wrapper around Conn:WriteJSON
+func (c *Client) WriteJSON(out interface{}) error {
+	c.mx.Lock()
+	defer c.mx.Unlock()
+	return c.conn.WriteJSON(out)
 }
 
 // Close is used to terminate our websocket client
 func (c *Client) Close() error {
+	c.mx.Lock()
+	defer c.mx.Unlock()
+	err := c.conn.WriteMessage(
+		websocket.CloseMessage,
+		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+	)
+	if err != nil {
+		log.Println("failed to send close message: ", err)
+	}
 	c.cancel()
-	return c.conn.Close()
+	return err
 }
