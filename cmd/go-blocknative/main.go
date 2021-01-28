@@ -80,7 +80,7 @@ func main() {
 							return err
 						}
 						for {
-							var out interface{}
+							var out client.EthTxPayload
 							if err := apiClient.ReadJSON(&out); err != nil {
 								// used to ignore the following event
 								// websocket: close 1005 (no status)

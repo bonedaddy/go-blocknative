@@ -9,10 +9,11 @@ import (
 type BaseMessage struct {
 	CategoryCode string `json:"categoryCode"`
 	EventCode    string `json:"eventCode"`
-	Timestamp    string `json:"timeStamp"`
-	DappID       string `json:"dappId"` // api key
-	Version      string `json:"version"`
-	Blockchain   `json:"blockchain"`
+	// Timestamp    string `json:"timeStamp"`
+	Timestamp  time.Time `json:"timeStamp"`
+	DappID     string    `json:"dappId"` // api key
+	Version    string    `json:"version"`
+	Blockchain `json:"blockchain"`
 }
 
 // Blockchain is a type fulfilling the blockchain params
@@ -41,6 +42,49 @@ type AddressSubscribe struct {
 // Account bundles a single account address
 type Account struct {
 	Address string `json:"address"`
+}
+
+// EthTxPayload is payload returned from a subscription to blocknative api
+type EthTxPayload struct {
+	Version       int       `json:"version"`
+	ServerVersion string    `json:"serverVersion"`
+	TimeStamp     time.Time `json:"timeStamp"`
+	ConnectionID  string    `json:"connectionId"`
+	Status        string    `json:"status"`
+	Event         struct {
+		BaseMessage
+		/*TimeStamp    time.Time `json:"timeStamp"`
+		CategoryCode string    `json:"categoryCode"`
+		EventCode    string    `json:"eventCode"`
+		DappID       string    `json:"dappId"`
+		Blockchain   struct {
+			System  string `json:"system"`
+			Network string `json:"network"`
+		} `json:"blockchain"`*/
+		Transaction struct {
+			Status           string `json:"status"`
+			MonitorID        string `json:"monitorId"`
+			MonitorVersion   string `json:"monitorVersion"`
+			TimePending      string `json:"timePending"`
+			BlocksPending    int    `json:"blocksPending"`
+			Hash             string `json:"hash"`
+			From             string `json:"from"`
+			To               string `json:"to"`
+			Value            string `json:"value"`
+			Gas              int    `json:"gas"`
+			GasPrice         string `json:"gasPrice"`
+			Nonce            int    `json:"nonce"`
+			BlockHash        string `json:"blockHash"`
+			BlockNumber      int    `json:"blockNumber"`
+			TransactionIndex int    `json:"transactionIndex"`
+			Input            string `json:"input"`
+			GasUsed          string `json:"gasUsed"`
+			Asset            string `json:"asset"`
+			WatchedAddress   string `json:"watchedAddress"`
+			Direction        string `json:"direction"`
+			Counterparty     string `json:"counterparty"`
+		} `json:"transaction"`
+	} `json:"event"`
 }
 
 // NewTxSubscribe constructs a Transaction subscription message
@@ -89,7 +133,7 @@ func NewBaseMessageMainnet(apiKey string) BaseMessage {
 		apiKey = os.Getenv("BLOCKNATIVE_API")
 	}
 	return BaseMessage{
-		Timestamp: time.Now().String(),
+		Timestamp: time.Now(),
 		DappID:    apiKey,
 		Version:   "v0",
 		Blockchain: Blockchain{
