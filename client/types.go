@@ -84,10 +84,13 @@ func NewAddressUnsubscribe(msg BaseMessage, address string) AddressSubscribe {
 }
 
 // NewBaseMessageMainnet returns a base message suitable for mainnet usage
-func NewBaseMessageMainnet() BaseMessage {
+func NewBaseMessageMainnet(apiKey string) BaseMessage {
+	if apiKey == "" {
+		apiKey = os.Getenv("BLOCKNATIVE_API")
+	}
 	return BaseMessage{
 		Timestamp: time.Now().String(),
-		DappID:    os.Getenv("BLOCKNATIVE_API"),
+		DappID:    apiKey,
 		Version:   "v0",
 		Blockchain: Blockchain{
 			System:  "ethereum",

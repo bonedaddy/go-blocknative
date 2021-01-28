@@ -15,6 +15,7 @@ type Opts struct {
 	Scheme               string
 	Host                 string
 	Path                 string
+	APIKey               string
 	PrintConnectResponse bool
 }
 
@@ -34,6 +35,7 @@ type Client struct {
 	ctx     context.Context
 	cancel  context.CancelFunc
 	initMsg BaseMessage // used to resend the initialization msg if connection drops
+	apiKey  string
 }
 
 // New returns a new blocknative websocket client
@@ -62,7 +64,7 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 	if opts.PrintConnectResponse {
 		log.Printf("%+v\n", out)
 	}
-	return &Client{conn: c, ctx: ctx, cancel: cancel}, nil
+	return &Client{conn: c, ctx: ctx, cancel: cancel, apiKey: opts.APIKey}, nil
 }
 
 // Initialize is used to handle blocknative websockets api initialization
