@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/bonedaddy/go-blocknative/client"
+	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,6 +24,10 @@ func main() {
 			Path:   c.String("api.path"),
 			APIKey: c.String("api.key"),
 		})
+		if err != nil {
+			return
+		}
+		err = apiClient.Initialize(client.NewBaseMessageMainnet(c.String("api.key")))
 		return
 	}
 	app.Flags = []cli.Flag{
@@ -77,8 +82,15 @@ func main() {
 						for {
 							var out interface{}
 							if err := apiClient.ReadJSON(&out); err != nil {
-								log.Println("failed to read message: ", err)
-								break
+								// used to ignore the following event
+								// websocket: close 1005 (no status)
+								if websocket.IsUnexpectedCloseError(err, 1005) {
+									log.Println("receive unexpected close, exiting: ", err)
+									break
+								} else {
+									log.Println("receive expected close message: ", err)
+									continue
+								}
 							}
 							log.Printf("receive message:\n%+v\n", out)
 						}
