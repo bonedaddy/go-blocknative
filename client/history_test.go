@@ -35,6 +35,12 @@ func TestMsgHistory(t *testing.T) {
 	item = hist.Pop().(arg)
 	require.Equal(t, 0, hist.Len()) // test length
 	require.Equal(t, 3, item.num)   // test value
+	hist.Push(arg{10})
+	require.Equal(t, 1, hist.Len())
+	item = hist.Pop().(arg)
+	require.Equal(t, 0, hist.Len())
+	require.Equal(t, 10, item.num)
+	require.Equal(t, nil, hist.Pop())
 	// set msg history again
 	set()
 	all := hist.PopAll()
