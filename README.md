@@ -1,2 +1,3 @@
 # go-blocknative
-blocknative websocket api in golang
+
+`go-blocknative` provides an api client for blocknative's websocket api. It allows subscribing to events by address or by transaction id and handles correct initialization as required by the documentation. It also includes the ability to store commands sent to the api in a history buffer, such that in the event of a connection failure we can restablish the current session as blocknative does not handle this on their end.
