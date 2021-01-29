@@ -92,7 +92,7 @@ type Config struct {
 	// A slice of valid filters (jsql: https://github.com/deitch/searchjs)
 	Filters []string `json:"filters,omitempty"`
 	// JSON abis
-	ABI []string `json:"abi,omitempty"`
+	ABI []interface{} `json:"abi,omitempty"`
 	// defines whether the service should automatically watch the address as defined in
 	WatchAddress bool `json:"watchAddress,omitempty"`
 }
@@ -102,7 +102,7 @@ func NewConfig(scope string, watchAddress bool, abis []string, filters []string)
 	return Config{
 		Scope:        scope,
 		Filters:      filters,
-		ABI:          abis,
+		ABI:          []interface{}{abis},
 		WatchAddress: watchAddress,
 	}
 }
