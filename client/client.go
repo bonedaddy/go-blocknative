@@ -149,10 +149,9 @@ func (c *Client) ReInit() error {
 	return nil
 }
 
-// checkError is used to handle processing of errors
-// and returns true if we were able to succesfully recover from the error
-// returning false if we aren't indicating
-func (c *Client) handleError(err error) bool {
+// ShouldReInit is used to check the given error
+// and return whether or not we should reinitialize the connection
+func (c *Client) ShouldReInit(err error) bool {
 	if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
 		return false
 	}
