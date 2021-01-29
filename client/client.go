@@ -97,6 +97,11 @@ func (c *Client) WriteJSON(out interface{}) error {
 	return c.conn.WriteJSON(out)
 }
 
+// APIKey returns the api key being used by the client
+func (c *Client) APIKey() string {
+	return c.apiKey
+}
+
 // Close is used to terminate our websocket client
 func (c *Client) Close() error {
 	c.mx.Lock()
