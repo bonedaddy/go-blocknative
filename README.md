@@ -54,11 +54,11 @@ func main() {
     // this defers closure of connection and uses proper websockets connection closing semantics
     defer cl.Close()
     // send the initialization message to blocknatives api
-    if err := client.Initialize(client.NewBaseMessageMainnet(cl.APIKey())); err != nil {
+    if err := cl.Initialize(client.NewBaseMessageMainnet(cl.APIKey())); err != nil {
         panic(err) 
     }
     // subscribe to events by address
-	if err := apiClient.WriteJSON(client.NewAddressSubscribe(
+	if err := cl.WriteJSON(client.NewAddressSubscribe(
 		client.NewBaseMessageMainnet(
 			cl.APIKey(),
 		),
