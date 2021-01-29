@@ -40,7 +40,7 @@ type Client struct {
 	history *MsgHistory
 }
 
-// New returns a new blocknative websocket client
+// New returns a new blocknative websocket client caller must make sure to initialize afterwards
 func New(ctx context.Context, opts Opts) (*Client, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	client := &Client{
@@ -113,6 +113,8 @@ func (c *Client) Close() error {
 	if err != nil {
 		log.Println("failed to send close message: ", err)
 	}
+	// close the underlying connection
+	c.conn.Close()
 	c.cancel()
 	return err
 }
@@ -131,6 +133,7 @@ func (c *Client) ReInit() error {
 	// can reuse the message history
 	msgs := c.history.CopyAll()
 	// send the initialize messsage
+	// we do not store this in the message history buffer
 	if err := c.conn.WriteJSON(c.initMsg); err != nil {
 		return errors.Wrap(err, "fatal error received")
 	}
@@ -161,16 +164,13 @@ func (c *Client) handleError(err error) bool {
 func (c *Client) doConnect(ctx context.Context, u url.URL) error {
 	// close the previous connection if it exists
 	if c.conn != nil {
-		log.Println("closing")
 		c.conn.Close()
 	}
-	log.Println("dialing")
 	conn, _, err := websocket.DefaultDialer.DialContext(ctx, u.String(), nil)
 	if err != nil {
 		return err
 	}
 	c.conn = conn
-	log.Println("reading")
 	// this checks out connection to blocknative's api and makes sure that we connected properly
 	var out ConnectResponse
 	if err := c.conn.ReadJSON(&out); err != nil {
