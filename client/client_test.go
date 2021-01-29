@@ -27,13 +27,17 @@ func TestClient(t *testing.T) {
 	var out interface{}
 	require.NoError(t, client.ReadJSON(&out))
 	t.Log(out)
-	require.NoError(t, client.WriteJSON(Configuration{
-		BaseMessage: NewBaseMessageMainnet(client.APIKey()),
-		Config: Config{
-			Scope: "0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41",
-			ABI:   []string{PoolbindingsABI},
-		},
-	}))
+	require.NoError(t, client.WriteJSON(
+		NewConfiguration(
+			NewBaseMessageMainnet(
+				client.APIKey(),
+			),
+			Config{
+				Scope: "0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41",
+				ABI:   []string{PoolbindingsABI},
+			},
+		)),
+	)
 	require.NoError(t, client.ReadJSON(&out))
 	require.NoError(t, client.Close())
 }

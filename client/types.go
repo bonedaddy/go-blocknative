@@ -98,6 +98,16 @@ type Config struct {
 	WatchAddress bool `json:"watchAddress"`
 }
 
+// NewConfiguration constructs a new configuration message
+func NewConfiguration(msg BaseMessage, config Config) Configuration {
+	msg.CategoryCode = "configs"
+	msg.EventCode = "put"
+	return Configuration{
+		BaseMessage: msg,
+		Config:      config,
+	}
+}
+
 // NewTxSubscribe constructs a Transaction subscription message
 func NewTxSubscribe(msg BaseMessage, txHash string) TxSubscribe {
 	msg.CategoryCode = "activeTransaction"
