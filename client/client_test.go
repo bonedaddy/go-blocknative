@@ -24,5 +24,9 @@ func TestClient(t *testing.T) {
 	var out interface{}
 	require.NoError(t, client.ReadJSON(&out))
 	t.Log("message: ", out)
+	// test reinitialization
+	t.Log("testing reinit")
+	require.NoError(t, client.ReInit())
+	t.Log("closing")
 	require.NoError(t, client.Close())
 }
