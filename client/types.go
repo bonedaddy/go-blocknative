@@ -78,6 +78,26 @@ type EthTxPayload struct {
 	} `json:"event"`
 }
 
+// Configuration enables configuration of the blocknative websockets api
+// and wraps the Config type
+type Configuration struct {
+	BaseMessage
+	Config `json:"config"`
+}
+
+// Config provides a specific config instance
+type Config struct {
+	//  valid Ethereum address or 'global'
+	Scope string `json:"scope"`
+	// A slice of valid filters (jsql: https://github.com/deitch/searchjs)
+	Filters []string `json:"filters,omitempty"`
+	// JSON abis
+	ABI []string `json:"abi"`
+	// ABI string `json:"abi"`
+	// defines whether the service should automatically watch the address as defined in
+	WatchAddress bool `json:"watchAddress"`
+}
+
 // NewTxSubscribe constructs a Transaction subscription message
 func NewTxSubscribe(msg BaseMessage, txHash string) TxSubscribe {
 	msg.CategoryCode = "activeTransaction"
