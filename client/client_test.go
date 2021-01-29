@@ -32,10 +32,12 @@ func TestClient(t *testing.T) {
 			NewBaseMessageMainnet(
 				client.APIKey(),
 			),
-			Config{
-				Scope: "0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41",
-				ABI:   []string{PoolbindingsABI},
-			},
+			NewConfig(
+				"0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41",
+				false,
+				[]string{PoolbindingsABI},
+				nil,
+			),
 		)),
 	)
 	require.NoError(t, client.ReadJSON(&out))

@@ -98,6 +98,16 @@ type Config struct {
 	WatchAddress bool `json:"watchAddress"`
 }
 
+// NewConfig returns a new config instance
+func NewConfig(scope string, watchAddress bool, abis []string, filters []string) Config {
+	return Config{
+		Scope:        scope,
+		Filters:      filters,
+		ABI:          abis,
+		WatchAddress: watchAddress,
+	}
+}
+
 // NewConfiguration constructs a new configuration message
 func NewConfiguration(msg BaseMessage, config Config) Configuration {
 	msg.CategoryCode = "configs"
