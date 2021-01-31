@@ -19,14 +19,71 @@ func TestClient(t *testing.T) {
 	// test base message creation using the api key embedded into the client struct
 	addrSub := NewAddressSubscribe(NewBaseMessageMainnet(client.APIKey()), "0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41")
 	require.NoError(t, client.WriteJSON(addrSub))
-
 	t.Log("reading message...")
 	var out interface{}
 	require.NoError(t, client.ReadJSON(&out))
+  /*
 	t.Log("message: ", out)
 	// test reinitialization
 	t.Log("testing reinit")
 	require.NoError(t, client.ReInit())
 	t.Log("closing")
+	t.Log(out)
+	require.NoError(t, client.WriteJSON(
+		NewConfiguration(
+			NewBaseMessageMainnet(
+				client.APIKey(),
+			),
+			NewConfig(
+				"0xfa6de2697D59E88Ed7Fc4dFE5A33daC43565ea41",
+				false,
+				[]string{logSwapABI},
+				nil,
+			),
+		)),
+	)
+	require.NoError(t, client.ReadJSON(&out))
+	t.Log(out)
+  */
 	require.NoError(t, client.Close())
 }
+
+var (
+	logSwapABI = `{
+		"anonymous": false,
+		"inputs": [
+		  {
+			"indexed": true,
+			"internalType": "address",
+			"name": "caller",
+			"type": "address"
+		  },
+		  {
+			"indexed": true,
+			"internalType": "address",
+			"name": "tokenIn",
+			"type": "address"
+		  },
+		  {
+			"indexed": true,
+			"internalType": "address",
+			"name": "tokenOut",
+			"type": "address"
+		  },
+		  {
+			"indexed": false,
+			"internalType": "uint256",
+			"name": "tokenAmountIn",
+			"type": "uint256"
+		  },
+		  {
+			"indexed": false,
+			"internalType": "uint256",
+			"name": "tokenAmountOut",
+			"type": "uint256"
+		  }
+		],
+		"name": "LOG_SWAP",
+		"type": "event"
+	}`
+)
