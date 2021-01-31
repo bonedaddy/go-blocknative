@@ -137,14 +137,16 @@ func (c *Client) ReInit() error {
 	if err := c.conn.WriteJSON(c.initMsg); err != nil {
 		return errors.Wrap(err, "fatal error received")
 	}
+	// drain
+	_ = c.conn.ReadJSON(nil)
 	for _, msg := range msgs {
 		if err := c.conn.WriteJSON(&msg); err != nil {
 			// TODO(bonedaddy): figure out how to properly handle
 			log.Println("receive error during reinitialization: ", err)
 			return err
 		}
-		var out interface{}
-		_ = c.conn.ReadJSON(&out)
+		// drain
+		_ = c.conn.ReadJSON(nil)
 	}
 	return nil
 }
