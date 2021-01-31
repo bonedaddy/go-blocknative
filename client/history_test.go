@@ -43,7 +43,20 @@ func TestMsgHistory(t *testing.T) {
 	require.Equal(t, nil, hist.Pop())
 	// set msg history again
 	set()
-	all := hist.PopAll()
+	all := hist.CopyAll()
+	require.Equal(t, 3, hist.Len())
+	for i := 0; i < len(all); i++ {
+		item = all[i].(arg)
+		switch i {
+		case 0:
+			require.Equal(t, 1, item.num)
+		case 1:
+			require.Equal(t, 2, item.num)
+		case 2:
+			require.Equal(t, 3, item.num)
+		}
+	}
+	all = hist.PopAll()
 	require.Equal(t, 0, hist.Len())
 	for i := 0; i < len(all); i++ {
 		item = all[i].(arg)

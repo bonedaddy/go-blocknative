@@ -44,6 +44,15 @@ func (mg *MsgHistory) PopAll() []interface{} {
 	return copied
 }
 
+// CopyAll is like PopAll except it does not clear the buffer
+func (mg *MsgHistory) CopyAll() []interface{} {
+	mg.mx.Lock()
+	defer mg.mx.Unlock()
+	copied := make([]interface{}, len(mg.buffer))
+	copy(copied, mg.buffer)
+	return copied
+}
+
 // Len returns the length of the msg history buffewr
 func (mg *MsgHistory) Len() int {
 	mg.mx.RLock()

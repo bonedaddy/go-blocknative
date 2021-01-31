@@ -22,6 +22,12 @@ func TestClient(t *testing.T) {
 	t.Log("reading message...")
 	var out interface{}
 	require.NoError(t, client.ReadJSON(&out))
+  /*
+	t.Log("message: ", out)
+	// test reinitialization
+	t.Log("testing reinit")
+	require.NoError(t, client.ReInit())
+	t.Log("closing")
 	t.Log(out)
 	require.NoError(t, client.WriteJSON(
 		NewConfiguration(
@@ -38,6 +44,7 @@ func TestClient(t *testing.T) {
 	)
 	require.NoError(t, client.ReadJSON(&out))
 	t.Log(out)
+  */
 	require.NoError(t, client.Close())
 }
 
