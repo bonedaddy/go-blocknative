@@ -89,6 +89,34 @@ func (c *Client) Initialize(msg BaseMessage) error {
 	}
 	return nil
 }
+
+// EventSub creates an event subscription.
+func (c *Client) EventSub(msg Configuration) error {
+	if err := c.conn.WriteJSON(&msg); err != nil {
+		return err
+	}
+
+	if err := c.conn.WriteJSON(&msg); err != nil {
+		return err
+	}
+
+	var out ConnectResponse
+	err := c.conn.ReadJSON(&out)
+	if err != nil {
+		return err
+	}
+	if out.Status != "ok" {
+		return errors.Errorf("failed to create subscription reason:%v", out.Reason)
+	}
+
+	// For some reason subs subscribe send 2 confirm messages.
+	err = c.conn.ReadJSON(&out)
+	if err != nil {
+		return err
+	}
+	if out.Status != "ok" {
+		return errors.Errorf("failed to create subscription reason:%v", out.Reason)
+	}
 	return nil
 }
 
