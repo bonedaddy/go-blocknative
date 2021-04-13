@@ -68,7 +68,7 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 }
 
 // Initialize is used to handle blocknative websockets api initialization
-// note we set CategoryCode and EventCode ourselves
+// note we set CategoryCode and EventCode ourselves.
 func (c *Client) Initialize(msg BaseMessage) error {
 	c.mx.Lock()
 	defer c.mx.Unlock()
@@ -78,8 +78,16 @@ func (c *Client) Initialize(msg BaseMessage) error {
 	if err := c.conn.WriteJSON(&msg); err != nil {
 		return err
 	}
-	var out interface{}
-	_ = c.conn.ReadJSON(&out)
+	var out ConnectResponse
+	err := c.conn.ReadJSON(&out)
+	if err != nil {
+		return err
+	}
+	if out.Status != "ok" {
+		return errors.New("failed to initialize api connection")
+	}
+	return nil
+}
 	return nil
 }
 
