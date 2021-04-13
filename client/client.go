@@ -2,12 +2,12 @@ package client
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/url"
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 // Opts provides configuration over the websocket connection
@@ -25,6 +25,7 @@ type ConnectResponse struct {
 	ServerVersion string `json:"serverVersion"`
 	ShowUX        bool   `json:"showUX"`
 	Status        string `json:"status"`
+	Reason        string `json:"reason"`
 	Version       int    `json:"version"`
 }
 
@@ -59,7 +60,7 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 	}
 	if out.Status != "ok" {
 		cancel()
-		return nil, errors.New("failed to initialize websockets api connection")
+		return nil, errors.Errorf("failed to initialize websockets connection reason:", out.Reason)
 	}
 	if opts.PrintConnectResponse {
 		log.Printf("%+v\n", out)
@@ -84,7 +85,7 @@ func (c *Client) Initialize(msg BaseMessage) error {
 		return err
 	}
 	if out.Status != "ok" {
-		return errors.New("failed to initialize api connection")
+		return errors.Errorf("failed to initialize api connection reason:%v", out.Status)
 	}
 	return nil
 }
