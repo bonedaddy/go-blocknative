@@ -50,30 +50,34 @@ type EthTxPayload struct {
 	TimeStamp     time.Time `json:"timeStamp"`
 	ConnectionID  string    `json:"connectionId"`
 	Status        string    `json:"status"`
+	Reason        string    `json:"reason"`
 	Event         struct {
 		BaseMessage
 		Transaction struct {
-			Status           string `json:"status"`
-			MonitorID        string `json:"monitorId"`
-			MonitorVersion   string `json:"monitorVersion"`
-			TimePending      string `json:"timePending"`
-			BlocksPending    int    `json:"blocksPending"`
-			Hash             string `json:"hash"`
-			From             string `json:"from"`
-			To               string `json:"to"`
-			Value            string `json:"value"`
-			Gas              int    `json:"gas"`
-			GasPrice         string `json:"gasPrice"`
-			Nonce            int    `json:"nonce"`
-			BlockHash        string `json:"blockHash"`
-			BlockNumber      int    `json:"blockNumber"`
-			TransactionIndex int    `json:"transactionIndex"`
-			Input            string `json:"input"`
-			GasUsed          string `json:"gasUsed"`
-			Asset            string `json:"asset"`
-			WatchedAddress   string `json:"watchedAddress"`
-			Direction        string `json:"direction"`
-			Counterparty     string `json:"counterparty"`
+			TimeStamp        time.Time `json:"timeStamp"`
+			Status           string    `json:"status"`
+			MonitorID        string    `json:"monitorId"`
+			MonitorVersion   string    `json:"monitorVersion"`
+			TimePending      string    `json:"timePending"`
+			PendingTimeStamp time.Time `json:"pendingTimeStamp"`
+			BlocksPending    int       `json:"blocksPending"`
+			Hash             string    `json:"hash"`
+			From             string    `json:"from"`
+			To               string    `json:"to"`
+			Value            string    `json:"value"`
+			Gas              int       `json:"gas"`
+			GasPrice         string    `json:"gasPrice"`
+			GasPriceGwei     int       `json:"gasPriceGwei"`
+			Nonce            int       `json:"nonce"`
+			BlockHash        string    `json:"blockHash"`
+			BlockNumber      int       `json:"blockNumber"`
+			TransactionIndex int       `json:"transactionIndex"`
+			Input            string    `json:"input"`
+			GasUsed          string    `json:"gasUsed"`
+			Asset            string    `json:"asset"`
+			WatchedAddress   string    `json:"watchedAddress"`
+			Direction        string    `json:"direction"`
+			Counterparty     string    `json:"counterparty"`
 		} `json:"transaction"`
 	} `json:"event"`
 }
