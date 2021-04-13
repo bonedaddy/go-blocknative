@@ -23,6 +23,11 @@ The `AddressSubscribe` struct is like `TxSubscribe` but allows subscribing/unsub
 
 When subscribe to events the `EthTxPayload` will be returned anytime an event is received for a transaction or address we are subscribed to. It is suitable for generalized processing of events, however you will likely want to use a use-case specific structure for better processing. Depending on the contract events being emitted they may have more information that what can be captured by this structure.
 
+## Function call subscriptions.
+
+Full example in the `examples` folder.
+
+
 ## Example
 
 The following example show cases how to subscribe to events by an address, and reading a response. Note that you should be familiar with the mechanics of `github.com/gorilla/websockets` as this library essentially just provides helper functions around the websockets library
