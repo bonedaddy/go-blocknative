@@ -50,7 +50,6 @@ type EthTxPayload struct {
 	TimeStamp     time.Time `json:"timeStamp"`
 	ConnectionID  string    `json:"connectionId"`
 	Status        string    `json:"status"`
-	Reason        string    `json:"reason"`
 	Event         struct {
 		BaseMessage
 		Transaction struct {
@@ -94,7 +93,7 @@ type Config struct {
 	//  valid Ethereum address or 'global'
 	Scope string `json:"scope"`
 	// A slice of valid filters (jsql: https://github.com/deitch/searchjs)
-	Filters []string `json:"filters,omitempty"`
+	Filters []map[string]string `json:"filters,omitempty"`
 	// JSON abis
 	ABI []interface{} `json:"abi,omitempty"`
 	// defines whether the service should automatically watch the address as defined in
@@ -102,7 +101,7 @@ type Config struct {
 }
 
 // NewConfig returns a new config instance
-func NewConfig(scope string, watchAddress bool, abis []string, filters []string) Config {
+func NewConfig(scope string, watchAddress bool, abis interface{}, filters []map[string]string) Config {
 	return Config{
 		Scope:        scope,
 		Filters:      filters,
