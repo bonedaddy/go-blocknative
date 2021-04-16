@@ -66,6 +66,7 @@ func main() {
 		cfgMsgWithBase := client.NewConfiguration(baseMsg, cfgMsg)
 
 		ExitOnErr(mempMon.EventSub(cfgMsgWithBase), "config subs")
+		log.Print("subscription created")
 
 		g.Add(func() error {
 			for {
