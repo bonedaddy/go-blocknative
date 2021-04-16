@@ -33,7 +33,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:    "api.key",
-			EnvVars: []string{"BLOCKNATIVE_API"},
+			EnvVars: []string{"BLOCKNATIVE_DAPP_ID"},
 			Usage:   "blocknative api key",
 		},
 		&cli.StringFlag{
