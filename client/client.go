@@ -81,7 +81,7 @@ func (c *Client) Initialize(msg BaseMessage) error {
 		return err
 	}
 	if out.Status != "ok" {
-		return errors.Errorf("failed to initialize api connection reason:%v", out.Status)
+		return errors.Errorf("failed to initialize api connection reason:%v", out.Reason)
 	}
 	return nil
 }
