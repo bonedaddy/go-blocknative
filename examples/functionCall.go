@@ -78,12 +78,11 @@ func main() {
 					}
 					return nil
 				}
-				fmt.Printf("msg: %v \n", msg)
+				log.Printf("msg: %v \n", msg)
 			}
 		}, func(error) {
-			fmt.Println("closing")
 			mempMon.Close()
-			fmt.Println("closed")
+			log.Printf("closed")
 		})
 
 		if err := g.Run(); err != nil {
