@@ -101,14 +101,6 @@ func (c *Client) EventSub(msg Configuration) error {
 		return errors.Errorf("failed to create subscription reason:%v", out.Reason)
 	}
 
-	// For some reason subs subscribe send 2 confirm messages.
-	err = c.conn.ReadJSON(&out)
-	if err != nil {
-		return err
-	}
-	if out.Status != "ok" {
-		return errors.Errorf("failed to create subscription reason:%v", out.Reason)
-	}
 	return nil
 }
 
