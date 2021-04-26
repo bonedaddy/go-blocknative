@@ -92,10 +92,6 @@ func (c *Client) EventSub(msg Configuration) error {
 		return err
 	}
 
-	if err := c.conn.WriteJSON(&msg); err != nil {
-		return err
-	}
-
 	var out ConnectResponse
 	err := c.conn.ReadJSON(&out)
 	if err != nil {
