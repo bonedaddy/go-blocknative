@@ -102,12 +102,16 @@ type Config struct {
 
 // NewConfig returns a new config instance
 func NewConfig(scope string, watchAddress bool, abis interface{}, filters []map[string]string) Config {
-	return Config{
+	cfg := Config{
 		Scope:        scope,
 		Filters:      filters,
-		ABI:          []interface{}{abis},
 		WatchAddress: watchAddress,
 	}
+	if abis != nil {
+		cfg.ABI = []interface{}{abis}
+	}
+
+	return cfg
 }
 
 // NewConfiguration constructs a new configuration message
