@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/url"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
@@ -35,6 +36,7 @@ type Client struct {
 	cancel  context.CancelFunc
 	initMsg BaseMessage // used to resend the initialization msg if connection drops
 	apiKey  string
+	mtx     sync.RWMutex
 }
 
 // New returns a new blocknative websocket client
@@ -69,6 +71,8 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 // Initialize is used to handle blocknative websockets api initialization
 // note we set CategoryCode and EventCode ourselves.
 func (c *Client) Initialize(msg BaseMessage) error {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
 	msg.CategoryCode = "initialize"
 	msg.EventCode = "checkDappId"
 	c.initMsg = msg
@@ -88,6 +92,8 @@ func (c *Client) Initialize(msg BaseMessage) error {
 
 // EventSub creates an event subscription.
 func (c *Client) EventSub(msg Configuration) error {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
 	if err := c.conn.WriteJSON(&msg); err != nil {
 		return err
 	}
@@ -106,11 +112,15 @@ func (c *Client) EventSub(msg Configuration) error {
 
 // ReadJSON is a wrapper around Conn:ReadJSON
 func (c *Client) ReadJSON(out interface{}) error {
+	c.mtx.RLock()
+	defer c.mtx.RUnlock()
 	return c.conn.ReadJSON(out)
 }
 
 // WriteJSON is a wrapper around Conn:WriteJSON
 func (c *Client) WriteJSON(out interface{}) error {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
 	return c.conn.WriteJSON(out)
 }
 
