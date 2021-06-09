@@ -53,27 +53,30 @@ type EthTxPayload struct {
 	Event         struct {
 		BaseMessage
 		Transaction struct {
-			Status           string `json:"status"`
-			MonitorID        string `json:"monitorId"`
-			MonitorVersion   string `json:"monitorVersion"`
-			TimePending      string `json:"timePending"`
-			BlocksPending    int    `json:"blocksPending"`
-			Hash             string `json:"hash"`
-			From             string `json:"from"`
-			To               string `json:"to"`
-			Value            string `json:"value"`
-			Gas              int    `json:"gas"`
-			GasPrice         string `json:"gasPrice"`
-			Nonce            int    `json:"nonce"`
-			BlockHash        string `json:"blockHash"`
-			BlockNumber      int    `json:"blockNumber"`
-			TransactionIndex int    `json:"transactionIndex"`
-			Input            string `json:"input"`
-			GasUsed          string `json:"gasUsed"`
-			Asset            string `json:"asset"`
-			WatchedAddress   string `json:"watchedAddress"`
-			Direction        string `json:"direction"`
-			Counterparty     string `json:"counterparty"`
+			TimeStamp        time.Time `json:"timeStamp"`
+			Status           string    `json:"status"`
+			MonitorID        string    `json:"monitorId"`
+			MonitorVersion   string    `json:"monitorVersion"`
+			TimePending      string    `json:"timePending"`
+			PendingTimeStamp time.Time `json:"pendingTimeStamp"`
+			BlocksPending    int       `json:"blocksPending"`
+			Hash             string    `json:"hash"`
+			From             string    `json:"from"`
+			To               string    `json:"to"`
+			Value            string    `json:"value"`
+			Gas              int       `json:"gas"`
+			GasPrice         string    `json:"gasPrice"`
+			GasPriceGwei     int       `json:"gasPriceGwei"`
+			Nonce            int       `json:"nonce"`
+			BlockHash        string    `json:"blockHash"`
+			BlockNumber      int       `json:"blockNumber"`
+			TransactionIndex int       `json:"transactionIndex"`
+			Input            string    `json:"input"`
+			GasUsed          string    `json:"gasUsed"`
+			Asset            string    `json:"asset"`
+			WatchedAddress   string    `json:"watchedAddress"`
+			Direction        string    `json:"direction"`
+			Counterparty     string    `json:"counterparty"`
 		} `json:"transaction"`
 	} `json:"event"`
 }
@@ -90,7 +93,7 @@ type Config struct {
 	//  valid Ethereum address or 'global'
 	Scope string `json:"scope"`
 	// A slice of valid filters (jsql: https://github.com/deitch/searchjs)
-	Filters []string `json:"filters,omitempty"`
+	Filters []map[string]string `json:"filters,omitempty"`
 	// JSON abis
 	ABI []interface{} `json:"abi,omitempty"`
 	// defines whether the service should automatically watch the address as defined in
@@ -98,13 +101,17 @@ type Config struct {
 }
 
 // NewConfig returns a new config instance
-func NewConfig(scope string, watchAddress bool, abis []string, filters []string) Config {
-	return Config{
+func NewConfig(scope string, watchAddress bool, abis interface{}, filters []map[string]string) Config {
+	cfg := Config{
 		Scope:        scope,
 		Filters:      filters,
-		ABI:          []interface{}{abis},
 		WatchAddress: watchAddress,
 	}
+	if abis != nil {
+		cfg.ABI = []interface{}{abis}
+	}
+
+	return cfg
 }
 
 // NewConfiguration constructs a new configuration message
@@ -160,7 +167,7 @@ func NewAddressUnsubscribe(msg BaseMessage, address string) AddressSubscribe {
 // NewBaseMessageMainnet returns a base message suitable for mainnet usage
 func NewBaseMessageMainnet(apiKey string) BaseMessage {
 	if apiKey == "" {
-		apiKey = os.Getenv("BLOCKNATIVE_API")
+		apiKey = os.Getenv("BLOCKNATIVE_DAPP_ID")
 	}
 	return BaseMessage{
 		Timestamp: time.Now(),
