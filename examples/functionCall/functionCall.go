@@ -59,6 +59,7 @@ func main() {
 			[]map[string]string{
 				{
 					"contractCall.methodName": "submitMiningSolution",
+					"_propertySearch":         "true",
 				},
 			},
 		)
@@ -79,7 +80,7 @@ func main() {
 					}
 					return nil
 				}
-				log.Printf("msg: %v \n", msg)
+				log.Printf("msg: %+v \n", msg)
 			}
 		}, func(error) {
 			mempMon.Close()

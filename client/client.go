@@ -146,6 +146,9 @@ func NetName(id int64) (string, error) {
 		netName = "main"
 	case 4:
 		netName = "rinkeby"
+	case 5:
+		netName = "goerli"
+
 	default:
 		return "", errors.Errorf("network not supported id:%v", id)
 	}
