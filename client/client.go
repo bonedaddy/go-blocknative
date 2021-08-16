@@ -138,3 +138,19 @@ func (c *Client) Close() error {
 	c.cancel()
 	return err
 }
+
+func NetName(id int64) (string, error) {
+	var netName string
+	switch id {
+	case 1:
+		netName = "main"
+	case 4:
+		netName = "rinkeby"
+	case 5:
+		netName = "goerli"
+
+	default:
+		return "", errors.Errorf("network not supported id:%v", id)
+	}
+	return netName, nil
+}
