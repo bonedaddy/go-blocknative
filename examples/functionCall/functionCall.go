@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -16,6 +17,8 @@ import (
 	"github.com/oklog/run"
 	"github.com/pkg/errors"
 )
+
+const methodName = "submitMiningSolution"
 
 func main() {
 	ExitOnErr(godotenv.Load(), "loading .env file")
@@ -58,7 +61,7 @@ func main() {
 			parsed,
 			[]map[string]string{
 				{
-					"contractCall.methodName": "submitMiningSolution",
+					"contractCall.methodName": methodName,
 					"_propertySearch":         "true",
 				},
 			},
@@ -81,6 +84,8 @@ func main() {
 					return nil
 				}
 				log.Printf("msg: %+v \n", msg)
+				log.Printf("func args: %+v \n", parseInput(msg.Event.Transaction.Input))
+
 			}
 		}, func(error) {
 			mempMon.Close()
@@ -100,6 +105,25 @@ func ExitOnErr(err error, msg string) {
 		logger.Output(2, fmt.Sprintf("root execution error:%+v msg:%+v", err, msg))
 		os.Exit(1)
 	}
+}
+
+func parseInput(input string) interface{} {
+	abiT, err := abi.JSON(strings.NewReader(TellorABI))
+	ExitOnErr(err, "loading the abi")
+
+	inputData, err := hex.DecodeString(input[10:])
+	ExitOnErr(err, "input decode")
+
+	method, exist := abiT.Methods[methodName]
+	if !exist {
+		ExitOnErr(errors.New("method doesn't exists in the abi"), "")
+	}
+
+	output, err := method.Inputs.Unpack(inputData)
+	if err != nil {
+		ExitOnErr(err, "args unpack")
+	}
+	return output
 }
 
 const TellorABI = `[
