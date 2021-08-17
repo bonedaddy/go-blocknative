@@ -120,9 +120,7 @@ func parseInput(input string) interface{} {
 	}
 
 	output, err := method.Inputs.Unpack(inputData)
-	if err != nil {
-		ExitOnErr(err, "args unpack")
-	}
+	ExitOnErr(err, "args unpack")
 	return output
 }
 
