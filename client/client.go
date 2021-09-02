@@ -75,6 +75,7 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 func (c *Client) Initialize(msg BaseMessage) error {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
+	msg.Version = "1"
 	msg.CategoryCode = "initialize"
 	msg.EventCode = "checkDappId"
 	c.initMsg = msg

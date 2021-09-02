@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -18,7 +19,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-const methodName = "submitMiningSolution"
+const (
+	netName      = "goerli"
+	contractAddr = "0xe5e09e1C64Eab3cA8bCAD722b0966B69931879ae"
+	methodName   = "submitMiningSolution"
+)
 
 func main() {
 	ExitOnErr(godotenv.Load(), "loading .env file")
@@ -43,22 +48,21 @@ func main() {
 		baseMsg := client.BaseMessage{
 			Timestamp: time.Now(),
 			DappID:    os.Getenv("BLOCKNATIVE_DAPP_ID"),
-			Version:   "v0",
 			Blockchain: client.Blockchain{
 				System:  "ethereum",
-				Network: "rinkeby",
+				Network: netName,
 			},
 		}
 
 		ExitOnErr(mempMon.Initialize(baseMsg), "initialize subs")
 
-		parsed, err := abi.JSON(strings.NewReader(TellorABI))
-		ExitOnErr(err, "parsing contract ABI")
+		var abi interface{}
+		ExitOnErr(json.Unmarshal([]byte(TellorABI), &abi), "marshal abi")
 
 		cfgMsg := client.NewConfig(
-			"0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0",
+			contractAddr,
 			true,
-			parsed,
+			abi,
 			[]map[string]string{
 				{
 					"contractCall.methodName": methodName,
@@ -69,8 +73,12 @@ func main() {
 
 		cfgMsgWithBase := client.NewConfiguration(baseMsg, cfgMsg)
 
+		msg, err := json.Marshal(cfgMsgWithBase)
+		ExitOnErr(err, "config message marshal")
+		log.Println("cfgMsgWithBase", string(msg))
+
 		ExitOnErr(mempMon.EventSub(cfgMsgWithBase), "config subs")
-		log.Print("subscription created")
+		log.Print("subscription created   ", "network:", netName, "   contract:", contractAddr, "    method:", methodName)
 
 		g.Add(func() error {
 			for {
@@ -81,7 +89,7 @@ func main() {
 							log.Fatal("mempMon read", err)
 						}
 					}
-					return nil
+					return err
 				}
 				log.Printf("msg: %+v \n", msg)
 				log.Printf("func args: %+v \n", parseInput(msg.Event.Transaction.Input))
@@ -121,6 +129,7 @@ func parseInput(input string) interface{} {
 
 	output, err := method.Inputs.Unpack(inputData)
 	ExitOnErr(err, "args unpack")
+
 	return output
 }
 
