@@ -63,13 +63,13 @@ func main() {
 			contractAddr,
 			true,
 			abi,
-			[]map[string]string{
-				{
-					"contractCall.methodName": methodName,
-					"_propertySearch":         "true",
-				},
-			},
 		)
+		cfgMsg.Filters = []map[string]string{
+			{
+				"contractCall.methodName": methodName,
+				"_propertySearch":         "true",
+			},
+		}
 
 		cfgMsgWithBase := client.NewConfiguration(baseMsg, cfgMsg)
 
