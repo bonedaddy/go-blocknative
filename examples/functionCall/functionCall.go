@@ -14,19 +14,18 @@ import (
 	"github.com/bonedaddy/go-blocknative/client"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gorilla/websocket"
-	"github.com/joho/godotenv"
 	"github.com/oklog/run"
 	"github.com/pkg/errors"
 )
 
 const (
-	netName      = "goerli"
-	contractAddr = "0xe5e09e1C64Eab3cA8bCAD722b0966B69931879ae"
+	netName      = "main"
+	contractAddr = "0x361cd36de2ffe3167904c58a5b0b22cf9217e466"
 	methodName   = "submitMiningSolution"
 )
 
 func main() {
-	ExitOnErr(godotenv.Load(), "loading .env file")
+	// ExitOnErr(godotenv.Load(), "loading .env file")
 
 	logger := log.New(os.Stdout, "", log.Ltime|log.Lshortfile)
 
@@ -134,7 +133,7 @@ func parseInput(input string) interface{} {
 }
 
 const TellorABI = `[
-    {
+	{
         "inputs": [
             {
                 "internalType": "string",
@@ -150,6 +149,11 @@ const TellorABI = `[
                 "internalType": "uint256[5]",
                 "name": "_value",
                 "type": "uint256[5]"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pass",
+                "type": "uint256"
             }
         ],
         "name": "submitMiningSolution",
