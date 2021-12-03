@@ -99,20 +99,19 @@ type Config struct {
 	// A slice of valid filters (jsql: https://github.com/deitch/searchjs)
 	Filters []map[string]string `json:"filters,omitempty"`
 	// JSON abis
-	ABI []interface{} `json:"abi,omitempty"`
+	ABI interface{} `json:"abi,omitempty"`
 	// defines whether the service should automatically watch the address as defined in
 	WatchAddress bool `json:"watchAddress,omitempty"`
 }
 
 // NewConfig returns a new config instance
-func NewConfig(scope string, watchAddress bool, abis interface{}, filters []map[string]string) Config {
+func NewConfig(scope string, watchAddress bool, abis interface{}) Config {
 	cfg := Config{
 		Scope:        scope,
-		Filters:      filters,
 		WatchAddress: watchAddress,
 	}
 	if abis != nil {
-		cfg.ABI = []interface{}{abis}
+		cfg.ABI = abis
 	}
 
 	return cfg
@@ -176,7 +175,6 @@ func NewBaseMessageMainnet(apiKey string) BaseMessage {
 	return BaseMessage{
 		Timestamp: time.Now(),
 		DappID:    apiKey,
-		Version:   "v0",
 		Blockchain: Blockchain{
 			System:  "ethereum",
 			Network: "main",

@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -12,13 +14,18 @@ import (
 	"github.com/bonedaddy/go-blocknative/client"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gorilla/websocket"
-	"github.com/joho/godotenv"
 	"github.com/oklog/run"
 	"github.com/pkg/errors"
 )
 
+const (
+	netName      = "main"
+	contractAddr = "0x361cd36de2ffe3167904c58a5b0b22cf9217e466"
+	methodName   = "submitMiningSolution"
+)
+
 func main() {
-	ExitOnErr(godotenv.Load(), "loading .env file")
+	// ExitOnErr(godotenv.Load(), "loading .env file")
 
 	logger := log.New(os.Stdout, "", log.Ltime|log.Lshortfile)
 
@@ -40,34 +47,37 @@ func main() {
 		baseMsg := client.BaseMessage{
 			Timestamp: time.Now(),
 			DappID:    os.Getenv("BLOCKNATIVE_DAPP_ID"),
-			Version:   "v0",
 			Blockchain: client.Blockchain{
 				System:  "ethereum",
-				Network: "rinkeby",
+				Network: netName,
 			},
 		}
 
 		ExitOnErr(mempMon.Initialize(baseMsg), "initialize subs")
 
-		parsed, err := abi.JSON(strings.NewReader(TellorABI))
-		ExitOnErr(err, "parsing contract ABI")
+		var abi interface{}
+		ExitOnErr(json.Unmarshal([]byte(TellorABI), &abi), "marshal abi")
 
 		cfgMsg := client.NewConfig(
-			"0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0",
+			contractAddr,
 			true,
-			parsed,
-			[]map[string]string{
-				{
-					"contractCall.methodName": "submitMiningSolution",
-					"_propertySearch":         "true",
-				},
-			},
+			abi,
 		)
+		cfgMsg.Filters = []map[string]string{
+			{
+				"contractCall.methodName": methodName,
+				"_propertySearch":         "true",
+			},
+		}
 
 		cfgMsgWithBase := client.NewConfiguration(baseMsg, cfgMsg)
 
+		msg, err := json.Marshal(cfgMsgWithBase)
+		ExitOnErr(err, "config message marshal")
+		log.Println("cfgMsgWithBase", string(msg))
+
 		ExitOnErr(mempMon.EventSub(cfgMsgWithBase), "config subs")
-		log.Print("subscription created")
+		log.Print("subscription created   ", "network:", netName, "   contract:", contractAddr, "    method:", methodName)
 
 		g.Add(func() error {
 			for {
@@ -78,9 +88,11 @@ func main() {
 							log.Fatal("mempMon read", err)
 						}
 					}
-					return nil
+					return err
 				}
 				log.Printf("msg: %+v \n", msg)
+				log.Printf("func args: %+v \n", parseInput(msg.Event.Transaction.Input))
+
 			}
 		}, func(error) {
 			mempMon.Close()
@@ -102,8 +114,26 @@ func ExitOnErr(err error, msg string) {
 	}
 }
 
+func parseInput(input string) interface{} {
+	abiT, err := abi.JSON(strings.NewReader(TellorABI))
+	ExitOnErr(err, "loading the abi")
+
+	inputData, err := hex.DecodeString(input[10:])
+	ExitOnErr(err, "input decode")
+
+	method, exist := abiT.Methods[methodName]
+	if !exist {
+		ExitOnErr(errors.New("method doesn't exists in the abi"), "")
+	}
+
+	output, err := method.Inputs.Unpack(inputData)
+	ExitOnErr(err, "args unpack")
+
+	return output
+}
+
 const TellorABI = `[
-    {
+	{
         "inputs": [
             {
                 "internalType": "string",
@@ -119,6 +149,11 @@ const TellorABI = `[
                 "internalType": "uint256[5]",
                 "name": "_value",
                 "type": "uint256[5]"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pass",
+                "type": "uint256"
             }
         ],
         "name": "submitMiningSolution",

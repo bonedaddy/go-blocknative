@@ -4,8 +4,10 @@ import (
 	"context"
 	"log"
 	"net/url"
+	"strconv"
 	"sync"
 
+	"github.com/ethereum/go-ethereum/params"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 )
@@ -73,6 +75,7 @@ func New(ctx context.Context, opts Opts) (*Client, error) {
 func (c *Client) Initialize(msg BaseMessage) error {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
+	msg.Version = "1"
 	msg.CategoryCode = "initialize"
 	msg.EventCode = "checkDappId"
 	c.initMsg = msg
@@ -153,4 +156,21 @@ func NetName(id int64) (string, error) {
 		return "", errors.Errorf("network not supported id:%v", id)
 	}
 	return netName, nil
+}
+
+func ParseGas(msg *EthTxPayload) (gasBaseFeeGwei, gasTipGwei float64, err error) {
+	gasBaseFee, err := strconv.ParseFloat(msg.Event.Transaction.MaxFeePerGas, 64)
+	if err != nil {
+		return 0, 0, errors.Wrapf(err, "parsing  gas base fee:%v", msg.Event.Transaction.MaxPriorityFeePerGas)
+	}
+
+	gasBaseFeeGwei = gasBaseFee / params.GWei
+
+	gasTip, err := strconv.ParseFloat(msg.Event.Transaction.MaxPriorityFeePerGas, 64)
+	if err != nil {
+		return 0, 0, errors.Wrapf(err, "parsing gas tip:%v", msg.Event.Transaction.MaxPriorityFeePerGas)
+	}
+	gasTipGwei = gasTip / params.GWei
+
+	return gasBaseFeeGwei, gasTipGwei, nil
 }
