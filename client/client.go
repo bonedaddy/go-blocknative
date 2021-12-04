@@ -158,13 +158,13 @@ func NetName(id int64) (string, error) {
 	return netName, nil
 }
 
-func ParseGas(msg *EthTxPayload) (gasBaseFeeGwei, gasTipGwei float64, err error) {
-	gasBaseFee, err := strconv.ParseFloat(msg.Event.Transaction.MaxFeePerGas, 64)
+func ParseGas(msg *EthTxPayload) (maxFeeGwei, gasTipGwei float64, err error) {
+	maxFee, err := strconv.ParseFloat(msg.Event.Transaction.MaxFeePerGas, 64)
 	if err != nil {
 		return 0, 0, errors.Wrapf(err, "parsing  gas base fee:%v", msg.Event.Transaction.MaxPriorityFeePerGas)
 	}
 
-	gasBaseFeeGwei = gasBaseFee / params.GWei
+	maxFeeGwei = maxFee / params.GWei
 
 	gasTip, err := strconv.ParseFloat(msg.Event.Transaction.MaxPriorityFeePerGas, 64)
 	if err != nil {
@@ -172,5 +172,5 @@ func ParseGas(msg *EthTxPayload) (gasBaseFeeGwei, gasTipGwei float64, err error)
 	}
 	gasTipGwei = gasTip / params.GWei
 
-	return gasBaseFeeGwei, gasTipGwei, nil
+	return maxFeeGwei, gasTipGwei, nil
 }
