@@ -53,34 +53,37 @@ type EthTxPayload struct {
 	Event         struct {
 		BaseMessage
 		Transaction struct {
-			Type                 int       `json:"type"`
-			MaxFeePerGas         string    `json:"maxFeePerGas"`
-			MaxPriorityFeePerGas string    `json:"maxPriorityFeePerGas"`
-			BaseFeePerGas        string    `json:"baseFeePerGas"`
-			TimeStamp            time.Time `json:"timeStamp"`
-			Status               string    `json:"status"`
-			MonitorID            string    `json:"monitorId"`
-			MonitorVersion       string    `json:"monitorVersion"`
-			TimePending          string    `json:"timePending"`
-			PendingTimeStamp     time.Time `json:"pendingTimeStamp"`
-			BlocksPending        int       `json:"blocksPending"`
-			Hash                 string    `json:"hash"`
-			From                 string    `json:"from"`
-			To                   string    `json:"to"`
-			Value                string    `json:"value"`
-			Gas                  int       `json:"gas"`
-			GasPrice             string    `json:"gasPrice"`
-			GasPriceGwei         float64   `json:"gasPriceGwei"`
-			Nonce                int       `json:"nonce"`
-			BlockHash            string    `json:"blockHash"`
-			BlockNumber          int       `json:"blockNumber"`
-			TransactionIndex     int       `json:"transactionIndex"`
-			Input                string    `json:"input"`
-			GasUsed              string    `json:"gasUsed"`
-			Asset                string    `json:"asset"`
-			WatchedAddress       string    `json:"watchedAddress"`
-			Direction            string    `json:"direction"`
-			Counterparty         string    `json:"counterparty"`
+			From                     string    `json:"from"`
+			To                       string    `json:"to"`
+			Nonce                    int       `json:"nonce"`
+			Gas                      int       `json:"gas"`
+			GasPrice                 string    `json:"gasPrice"`
+			GasPriceGwei             float64   `json:"gasPriceGwei"`
+			GasUsed                  int       `json:"gasUsed"`
+			BaseFeePerGas            string    `json:"baseFeePerGas"`
+			BaseFeePerGasGwei        float64   `json:"baseFeePerGasGwei"`
+			MaxPriorityFeePerGas     string    `json:"maxPriorityFeePerGas"`
+			MaxPriorityFeePerGasGwei float64   `json:"maxPriorityFeePerGasGwei"`
+			MaxFeePerGas             string    `json:"maxFeePerGas"`
+			MaxFeePerGasGwei         float64   `json:"maxFeePerGasGwei"`
+			Type                     int       `json:"type"`
+			Value                    string    `json:"value"`
+			Hash                     string    `json:"hash"`
+			Input                    string    `json:"input"`
+			BlockHash                string    `json:"blockHash"`
+			BlockNumber              int       `json:"blockNumber"`
+			TimeStamp                time.Time `json:"timeStamp"`
+			Status                   string    `json:"status"`
+			MonitorID                string    `json:"monitorId"`
+			MonitorVersion           string    `json:"monitorVersion"`
+			TimePending              string    `json:"timePending"`
+			PendingTimeStamp         time.Time `json:"pendingTimeStamp"`
+			BlocksPending            int       `json:"blocksPending"`
+			TransactionIndex         int       `json:"transactionIndex"`
+			Asset                    string    `json:"asset"`
+			WatchedAddress           string    `json:"watchedAddress"`
+			Direction                string    `json:"direction"`
+			Counterparty             string    `json:"counterparty"`
 		} `json:"transaction"`
 	} `json:"event"`
 }

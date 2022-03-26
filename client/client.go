@@ -4,10 +4,8 @@ import (
 	"context"
 	"log"
 	"net/url"
-	"strconv"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/params"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 )
@@ -156,21 +154,4 @@ func NetName(id int64) (string, error) {
 		return "", errors.Errorf("network not supported id:%v", id)
 	}
 	return netName, nil
-}
-
-func ParseGas(msg *EthTxPayload) (maxFeeGwei, gasTipGwei float64, err error) {
-	maxFee, err := strconv.ParseFloat(msg.Event.Transaction.MaxFeePerGas, 64)
-	if err != nil {
-		return 0, 0, errors.Wrapf(err, "parsing  gas base fee:%v", msg.Event.Transaction.MaxPriorityFeePerGas)
-	}
-
-	maxFeeGwei = maxFee / params.GWei
-
-	gasTip, err := strconv.ParseFloat(msg.Event.Transaction.MaxPriorityFeePerGas, 64)
-	if err != nil {
-		return 0, 0, errors.Wrapf(err, "parsing gas tip:%v", msg.Event.Transaction.MaxPriorityFeePerGas)
-	}
-	gasTipGwei = gasTip / params.GWei
-
-	return maxFeeGwei, gasTipGwei, nil
 }
