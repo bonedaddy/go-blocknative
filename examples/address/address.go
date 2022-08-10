@@ -7,13 +7,9 @@ import (
 
 	"github.com/bonedaddy/go-blocknative/client"
 	"github.com/gorilla/websocket"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
 
 	// create the base client struct
 	cl, err := client.New(context.Background(), client.Opts{
@@ -39,7 +35,7 @@ func main() {
 		client.NewBaseMessageMainnet(
 			cl.APIKey(),
 		),
-		"0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0",
+		"0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45", //Uniswap router address with high volume from Blocknative website.
 	)); err != nil {
 		panic(err)
 	}
@@ -52,12 +48,16 @@ func main() {
 					if e.Code != 1000 {
 						log.Fatal("mempMon read", err)
 					}
+					log.Fatal("websocket closed", err)
 				}
-				return
+				log.Println("failed to read msg", err)
+				continue
 			} else {
 				log.Println("receive expected close message: ", err)
 				continue
 			}
+			log.Println("failed to read msg memory", err)
+			continue
 		}
 		log.Printf("receive message:\n%+v\n", msg)
 	}
