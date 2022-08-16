@@ -40,7 +40,13 @@ func main() {
 		panic(err)
 	}
 	// read messages in a loop
-	for {
+
+	// if a transaction hash is read, but the whole transaction cannot be read,
+	// try importing the native geth client as a new client instance name:
+	// "geth "github.com/ethereum/go-ethereum/ethclient" "
+	// and pass transaction hash to that client to extract more data
+
+  for {
 		var msg client.EthTxPayload
 		if err := cl.ReadJSON(&msg); err != nil {
 			if err := cl.ReadJSON(msg); err != nil {
@@ -50,14 +56,11 @@ func main() {
 					}
 					log.Fatal("websocket closed", err)
 				}
-				log.Println("failed to read msg", err)
-				continue
+				log.Println("failed to read msg at hash:", msg.Event.Transaction.Hash, err)
 			} else {
-				log.Println("receive expected close message: ", err)
-				continue
+				log.Println("receive expected close message at hash: ", msg.Event.Transaction.Hash, err)
 			}
-			log.Println("failed to read msg memory", err)
-			continue
+			log.Println("failed to read msg memory at hash", msg.Event.Transaction.Hash, err)
 		}
 		log.Printf("receive message:\n%+v\n", msg)
 	}
